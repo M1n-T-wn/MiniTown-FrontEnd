@@ -2,28 +2,63 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 import add_img from "./img/add_img.png";
 
-function Recruitment_body({img_arr,setImg_arr,index}) {
+function Recruitment_body({ img_arr, setImg_arr, index }) {
   const img_ref = useRef();
   //State 저장소
   const [Title, setTitle] = useState("");
   const [Kategorie, setKategorie] = useState("");
-  const [Age, setAge] = useState("");
-  const [Day, setDay] = useState("");
-  const [MeetingName, setMeetingName] = useState("");
-  const [MemberNum, setMemberNum] = useState("");
   const [Explanation, setExplanation] = useState("");
-  const [onoff,setOnoff] = useState(true);
- 
+  const [onoff, setOnoff] = useState(true);
+
+  let profile = new FormData();
 
   //function 저장소
-  const check_Button = ()=>{
+  const check_Button = () => {
     let post_json = {
-      name:Title,
-      OnOffline: (onoff ? "ONLINE":"OFFLINE"),
-      MeetingCategory:Kategorie
-    }
-    axios.post("",)
-  }
+      name: Title,
+      type: "MEETING",
+      info: Explanation,
+    };
+    axios({
+      method: "post",
+      url: "http://54.180.98.98:9094/api/meetings",
+      params: {
+        category: Kategorie,
+        option: onoff ? "ONLINE" : "OFFLINE",
+      },
+      data: post_json,
+      headers: {
+        Authorization:
+          "Bearer " +
+          "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYW5hZ2VyIiwiYXVkIjoiTE9DQUwiLCJpc3MiOiJBZG1pbiIsImV4cCI6MTYzNTYyNTcyMX0.mOYB7e8dd-EOJlHy4hJRBsncgW_Q2OBgnbOKinA0vTWDboIes5SP6ovGhHLSdIwPS1dMBj8tAs5zxe7AEVleUg",
+      },
+    }).then((res) => {
+      const chatroom_id = res.data.data.id;
+      console.log(res);
+      for (let i = 0; i < index; i++) {
+        console.log(chatroom_id);
+        axios({
+          method: "post",
+          url:
+            "http://54.180.98.98:9094/api/image/chatRoom/" + chatroom_id,
+          // params:{
+          //   category:Kategorie,
+          //   option:(onoff ? "ONLINE" : "OFFLINE")
+          // },
+          data: profile,
+          headers: {
+            Authorization:
+              "Bearer " +
+              "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYW5hZ2VyIiwiYXVkIjoiTE9DQUwiLCJpc3MiOiJBZG1pbiIsImV4cCI6MTYzNTYyNTcyMX0.mOYB7e8dd-EOJlHy4hJRBsncgW_Q2OBgnbOKinA0vTWDboIes5SP6ovGhHLSdIwPS1dMBj8tAs5zxe7AEVleUg",
+          },
+        })
+          // axios.post("http://54.180.98.98:9094/api/image/chatRoom/"+chatroom_id,img_arr.img[i].file)
+          .then((res) => {
+            console.log(res);
+          });
+      }
+    });
+  };
   const OnImgChange = (e) => {
     if (e.target.files[0] !== undefined) {
       let IMGARRAY = [...img_arr.img];
@@ -32,6 +67,7 @@ function Recruitment_body({img_arr,setImg_arr,index}) {
         url: URL.createObjectURL(e.target.files[0]),
       };
       IMGARRAY.push(IMG);
+      profile.append(index, e.target.files[0]);
       index++;
       setImg_arr({ img: IMGARRAY });
     }
@@ -47,11 +83,11 @@ function Recruitment_body({img_arr,setImg_arr,index}) {
   });
 
   const onStyle = {
-    backgroundColor:"rgba(73, 147, 250, 1)"
-  }
+    backgroundColor: "rgba(73, 147, 250, 1)",
+  };
   const offStyle = {
-    backgroundColor:"rgba(205, 205, 205, 1)"
-  }
+    backgroundColor: "rgba(205, 205, 205, 1)",
+  };
   return (
     <div className="Re_Body">
       {/* <button
@@ -69,14 +105,18 @@ function Recruitment_body({img_arr,setImg_arr,index}) {
             className="Re_body_OnOff_OnlineButton"
             type="button"
             style={onoff ? onStyle : offStyle}
-            onClick={()=>{setOnoff(true)}}
+            onClick={() => {
+              setOnoff(true);
+            }}
           />
           <input
             value="오프라인"
             className="Re_body_OnOff_OfflineButton"
             type="button"
             style={!onoff ? onStyle : offStyle}
-            onClick={()=>{setOnoff(false)}}
+            onClick={() => {
+              setOnoff(false);
+            }}
           />
         </div>
       </div>
@@ -102,7 +142,19 @@ function Recruitment_body({img_arr,setImg_arr,index}) {
         </div>
       </div>
       <div className="Re_body_line" />
-      <div className="Re_body_Onearia" name="Re_body_title">
+      <div className="Re_body_Onearia" name="Re_body_meeting_name">
+        <div className="Re_body_title">동호회명</div>
+        <div className="Re_body_meeting_name_input_aria">
+          <input
+            className="Re_body_meeting_name_input"
+            placeholder="동호회명을 입력해주세요"
+            onChange={(e) => {
+              setTitle(e.target.value);
+            }}
+          />
+        </div>
+      </div>
+      {/* <div className="Re_body_Onearia" name="Re_body_title">
         <div className="Re_body_title">제목</div>
         <div className="Re_body_title_input_aria">
           <input
@@ -113,7 +165,7 @@ function Recruitment_body({img_arr,setImg_arr,index}) {
             }}
           />
         </div>
-      </div>
+      </div> */}
       <div className="Re_body_line" />
       <div className="Re_body_Onearia" name="Re_body_Kategorie">
         <div className="Re_body_One_title">카테고리</div>
@@ -133,8 +185,7 @@ function Recruitment_body({img_arr,setImg_arr,index}) {
           </select>
         </div>
       </div>
-      <div className="Re_body_line" />
-      <div className="Re_body_Onearia" name="Re_body_age">
+      {/* <div className="Re_body_Onearia" name="Re_body_age">
         <div className="Re_body_One_title">가장많은 나이대</div>
         <div className="Re_body_Age_input_aria">
           <select
@@ -149,9 +200,8 @@ function Recruitment_body({img_arr,setImg_arr,index}) {
             <option value="40대">40대</option>
           </select>
         </div>
-      </div>
-      <div className="Re_body_line" />
-      <div className="Re_body_Onearia" name="Re_body_day">
+      </div> */}
+      {/* <div className="Re_body_Onearia" name="Re_body_day">
         <div className="Re_body_One_title">활동하는 요일</div>
         <div className="Re_body_day_input_aria">
           <select
@@ -165,20 +215,8 @@ function Recruitment_body({img_arr,setImg_arr,index}) {
             <option value="불특정">불특정</option>
           </select>
         </div>
-      </div>
-      <div className="Re_body_line" />
-      <div className="Re_body_Onearia" name="Re_body_meeting_name">
-        <div className="Re_body_title">동호회명</div>
-        <div className="Re_body_meeting_name_input_aria">
-          <input
-            className="Re_body_meeting_name_input"
-            placeholder="동호회명을 입력해주세요"
-            onChange={(e) => {
-              setMeetingName(e.target.value);
-            }}
-          />
-        </div>
-      </div>
+      </div> */}
+      {/*       
       <div className="Re_body_line" />
       <div className="Re_body_Onearia" name="Re_body_member_num">
         <div className="Re_body_One_title">현재 회원수</div>
@@ -191,7 +229,7 @@ function Recruitment_body({img_arr,setImg_arr,index}) {
             }}
           />
         </div>
-      </div>
+      </div> */}
       <div className="Re_body_line" />
       <div className="Re_body_Onearia_Explanation">
         <div className="Re_body_Explanation_title">동호회 설명</div>
@@ -202,7 +240,12 @@ function Recruitment_body({img_arr,setImg_arr,index}) {
               setExplanation(e.target.value);
             }}
           />
-          <input type="button" className="Re_body_check" value="확인" />
+          <input
+            type="button"
+            onClick={check_Button}
+            className="Re_body_check"
+            value="확인"
+          />
         </div>
       </div>
     </div>

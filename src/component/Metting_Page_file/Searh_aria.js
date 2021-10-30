@@ -6,9 +6,11 @@ function Searh_aria() {
 
   const onStyle = {
     backgroundColor: "rgba(73, 147, 250, 1)",
+    marginLeft:"10px"
   };
   const offStyle = {
     backgroundColor: "rgba(205, 205, 205, 1)",
+    marginLeft:"10px"
   };
   return (
     <div className="Me_body_Search_aria">
@@ -47,8 +49,44 @@ function Searh_aria() {
         </div>
       </div>
       <div className="Me_body_Search_aria_Search_box_line"></div>
-      <div className="Me_body_Search_aria_categori">
-         카테고리
+      <div className="Me_body_Search_aria_categori">카테고리</div>
+      <div className="Me_body_Search_aria_flex">
+        <input
+          value="스포츠"
+          className="Me_body_OnOff_OnlineButton"
+          type="button"
+          style={onStyle}
+        />
+        <input
+          value="음악"
+          className="Me_body_OnOff_OfflineButton"
+          type="button"
+          style={offStyle}
+        />
+        <input
+          value="여행"
+          className="Me_body_OnOff_OnlineButton"
+          type="button"
+          style={offStyle}
+        />
+        <input
+          value="수공예"
+          className="Me_body_OnOff_OfflineButton"
+          type="button"
+          style={offStyle}
+        />
+        <input
+          value="기타"
+          className="Me_body_OnOff_OnlineButton"
+          type="button"
+          style={offStyle}
+        />
+        <input
+          value="스터디"
+          className="Me_body_OnOff_OfflineButton"
+          type="button"
+          style={!onoff ? onStyle : offStyle}
+        />
       </div>
     </div>
   );
